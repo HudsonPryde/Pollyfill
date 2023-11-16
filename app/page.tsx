@@ -1,8 +1,21 @@
+'use client';
+import * as React from 'react';
 import Image from 'next/image'
+import dynamic from 'next/dynamic';
+
+const FeaturesDemo = dynamic(() => import('@/lib/graph/graph'), { ssr: false });
 
 export default function Home() {
+  const [showGraph, setShowGraph] = React.useState(false);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setShowGraph(true);
+    }, 1000);
+  }, []);
+
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 text-neutral-700">
+    <div className="flex min-h-screen flex-col items-center p-24 text-neutral-700">
       {/* header message */}
       <div className='w-full max-w-4xl h-96 flex justify-center items-center'>
         <h1 className='text-6xl font-bold text-center leading-normal animate-fadeIn'>What would you like to learn today?</h1>
@@ -14,6 +27,10 @@ export default function Home() {
           <Image src='/send.svg' width={44} height={44} alt='send'/>
         </button>
       </div>
-    </main>
+      {/* graph */}
+      <div className='w-full max-w-4xl h-96 flex justify-center items-center'>
+        {showGraph && <FeaturesDemo />}
+      </div>
+    </div>
   )
 }
