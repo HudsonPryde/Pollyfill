@@ -1,18 +1,10 @@
 'use client';
 import * as React from 'react';
 import Image from 'next/image'
-import dynamic from 'next/dynamic';
-
-const FeaturesDemo = dynamic(() => import('@/lib/graph/graph'), { ssr: false });
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const [showGraph, setShowGraph] = React.useState(false);
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      setShowGraph(true);
-    }, 1000);
-  }, []);
+  const router = useRouter();
 
   return (
     <div className="flex min-h-screen flex-col items-center p-24 text-neutral-700">
@@ -23,13 +15,9 @@ export default function Home() {
       {/* user input */}
       <div className='rounded-lg shadow-md w-full max-w-4xl h-12 focus:outline-none p-2 flex flex-row bg-white'>
         <input autoFocus className='flex-1 focus:outline-none'/>
-        <button className='flex justify-center items-center'>
+        <button className='flex justify-center items-center' onClick={() => router.push('/graph')}>
           <Image src='/send.svg' width={44} height={44} alt='send'/>
         </button>
-      </div>
-      {/* graph */}
-      <div className='w-full max-w-4xl h-96 flex justify-center items-center'>
-        {showGraph && <FeaturesDemo />}
       </div>
     </div>
   )
