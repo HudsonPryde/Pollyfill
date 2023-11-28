@@ -4,6 +4,8 @@ import { v4 as uuidv4 } from "uuid";
 
 export const addGraphData = (graph: GraphModel, baseNode: ICanvasNode, subtopics: string[]): GraphModel => {
     let newData: GraphModel = graph;
+    const baseWidth = baseNode.width ?? 110;
+    const xOffset = baseNode.x + baseWidth/2 - (110*subtopics.length)/2;
     subtopics.forEach((topic, index) => {
         const nodeId = uuidv4();
         const node: ICanvasNode = {
@@ -15,7 +17,7 @@ export const addGraphData = (graph: GraphModel, baseNode: ICanvasNode, subtopics
                     position: [0.5, 0],
                     name: "port",
                     isInputDisabled: false,
-                    isOutputDisabled: false,
+                    isOutputDisabled: true,
                     data: {
                         nodeType: "source",
                         },
@@ -34,7 +36,7 @@ export const addGraphData = (graph: GraphModel, baseNode: ICanvasNode, subtopics
             data: {
                 nodeType: "source",
             },
-            x: baseNode.x + index * 100,
+            x: xOffset + index * 110,
             y: baseNode.y + 100,
         };
         newData = newData.insertNode(node);

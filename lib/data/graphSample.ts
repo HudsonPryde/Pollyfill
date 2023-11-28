@@ -20,7 +20,7 @@ export const graphSample: ICanvasData = {
             data: {
                 nodeType: "source",
             },
-            x: 100,
+            x: window.innerWidth / 2 - 50,
             y: 100,
         },
     ],

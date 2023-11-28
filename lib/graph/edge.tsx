@@ -12,6 +12,7 @@ export const EdgeConfig: IEdgeConfig = {
       };
   
       return (
+        <>
         <path
           key={edge.id}
           d={getCurvePathD(args.x2, args.x1, args.y2, args.y1)}
@@ -19,6 +20,7 @@ export const EdgeConfig: IEdgeConfig = {
           style={style}
           id={`edge${edge.id}`}
         />
+        </>
       );
     },
 }

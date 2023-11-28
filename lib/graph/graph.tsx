@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   Graph,
   GraphModel,
@@ -10,18 +10,11 @@ import {
   CanvasMouseMode,
   GraphCanvasEvent,
   ICanvasData,
-  updateData,
-  ICanvasUpdateDataEvent,
-  setData,
-} from 'react-dag-editor'; // Graph component & utils
-import { graphSample } from '../data/graphSample';
-import { subtopics } from '../data/sampleResponse'; 
-import { EdgeConfig } from './edge'
-import { PortConfig } from './port'
-import { NodeConfig } from './node'
-import { addGraphData } from '../util/createGraphData';
-
-
+} from "react-dag-editor"; // Graph component & utils
+import { graphSample } from "../data/graphSample";
+import { EdgeConfig } from "./edge";
+import { PortConfig } from "./port";
+import { NodeConfig } from "./node";
 
 export const graphConfig = GraphConfigBuilder.default()
   .registerNode((node) => {
@@ -47,9 +40,36 @@ export const graphConfig = GraphConfigBuilder.default()
   .registerEdge((_edge) => EdgeConfig)
   .build();
 
-
-
-const FeaturesDemo: React.FC = () => {
+interface GraphViewProps {
+  topic: string;
+}
+const GraphView = ({ topic }: GraphViewProps) => {
+  const baseNode: ICanvasData = {
+    nodes: [
+      {
+        id: "source",
+        name: topic,
+        ports: [
+          {
+            id: "port-bottom-source",
+            position: [0.5, 1],
+            name: "source port",
+            isInputDisabled: false,
+            isOutputDisabled: false,
+            data: {
+              nodeType: "source",
+            },
+          },
+        ],
+        data: {
+          nodeType: "source",
+        },
+        x: window.innerWidth / 2 - 50,
+        y: 100,
+      },
+    ],
+    edges: [],
+  };
   const [state, dispatch] = useGraphReducer(
     {
       settings: {
@@ -68,7 +88,7 @@ const FeaturesDemo: React.FC = () => {
           GraphFeatures.LimitBoundary,
         ]),
       },
-      data: GraphModel.fromJSON(graphSample),
+      data: GraphModel.fromJSON(baseNode),
     },
     undefined
   );
@@ -76,30 +96,11 @@ const FeaturesDemo: React.FC = () => {
   /** Render your custom anchors of node by shape */
   const renderNodeAnchors: RenderNodeAnchors = React.useCallback(
     (node, getMouseDown, defaultAnchors) => {
-      return defaultAnchors
+      return defaultAnchors;
     },
     []
   );
 
-  // add subtopics to graph
-  React.useEffect(() => {
-    // const newGraph = addGraphData(graph, nodes[0], subtopics);
-    // console.log(newGraph);
-    // dispatch({ type: GraphCanvasEvent.SetData, data: newGraph})
-    dispatch({ type: GraphCanvasEvent.UpdateData, shouldRecord: false, updater(prevData) {
-      const nodes = prevData.toJSON().nodes;
-      return addGraphData(prevData, nodes[0], subtopics);
-    }, })
-    dispatch({ type: GraphCanvasEvent.UpdateData, shouldRecord: false, updater(prevData) {
-      const nodes = prevData.toJSON().nodes;
-      return addGraphData(prevData, nodes[4], subtopics);
-    }, })
-    dispatch({ type: GraphCanvasEvent.UpdateData, shouldRecord: false, updater(prevData) {
-      const nodes = prevData.toJSON().nodes;
-      return addGraphData(prevData, nodes[6], subtopics);
-    }, })
-  }, []);
-  
   // pan on middle mouse button down
   React.useEffect(() => {
     const onMouseDown = (e: MouseEvent) => {
@@ -107,7 +108,12 @@ const FeaturesDemo: React.FC = () => {
         // mouse move listner
         const onMouseMove = (e: MouseEvent) => {
           document.body.style.cursor = "grabbing";
-          dispatch({ type: GraphCanvasEvent.Drag, dx: e.movementX*0.5, dy: e.movementY*0.5, rawEvent: e });
+          dispatch({
+            type: GraphCanvasEvent.Drag,
+            dx: e.movementX * 0.5,
+            dy: e.movementY * 0.5,
+            rawEvent: e,
+          });
         };
         // mouse up listner
         const onMouseUp = (e: MouseEvent) => {
@@ -123,14 +129,21 @@ const FeaturesDemo: React.FC = () => {
 
   return (
     <ReactDagEditor
-      style={{ flex: 1, display: "flex", flexDirection: "column", height: '100vh' }}
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+      }}
       state={state}
       dispatch={dispatch}
-      
     >
-      <Graph renderNodeAnchors={renderNodeAnchors} canvasMouseMode={CanvasMouseMode.Select}/>
+      <Graph
+        renderNodeAnchors={renderNodeAnchors}
+        canvasMouseMode={CanvasMouseMode.Select}
+      />
     </ReactDagEditor>
   );
 };
 
-export default FeaturesDemo;
+export default GraphView;
