@@ -14,7 +14,7 @@ import {
   updateData,
 } from "react-dag-editor";
 import { subtopics } from "../data/sampleResponse";
-import { addGraphData } from "../utils/createGraphData";
+import { addGraphData } from "../utils/addGraphData";
 
 export class PortConfig implements IPortConfig {
   public getStyle(

@@ -93,14 +93,6 @@ const GraphView = ({ topic }: GraphViewProps) => {
     undefined
   );
 
-  /** Render your custom anchors of node by shape */
-  const renderNodeAnchors: RenderNodeAnchors = React.useCallback(
-    (node, getMouseDown, defaultAnchors) => {
-      return defaultAnchors;
-    },
-    []
-  );
-
   // pan on middle mouse button down
   React.useEffect(() => {
     const onMouseDown = (e: MouseEvent) => {
@@ -138,10 +130,7 @@ const GraphView = ({ topic }: GraphViewProps) => {
       state={state}
       dispatch={dispatch}
     >
-      <Graph
-        renderNodeAnchors={renderNodeAnchors}
-        canvasMouseMode={CanvasMouseMode.Select}
-      />
+      <Graph canvasMouseMode={CanvasMouseMode.Select} />
     </ReactDagEditor>
   );
 };
