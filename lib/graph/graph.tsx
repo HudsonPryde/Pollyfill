@@ -15,6 +15,7 @@ import { graphSample } from "../data/graphSample";
 import { EdgeConfig } from "./edge";
 import { PortConfig } from "./port";
 import { NodeConfig } from "./node";
+import { addGraphData } from "../utils/addGraphData";
 
 export const graphConfig = GraphConfigBuilder.default()
   .registerNode((node) => {
@@ -41,35 +42,9 @@ export const graphConfig = GraphConfigBuilder.default()
   .build();
 
 interface GraphViewProps {
-  topic: string;
+  data: ICanvasData;
 }
-const GraphView = ({ topic }: GraphViewProps) => {
-  const baseNode: ICanvasData = {
-    nodes: [
-      {
-        id: "source",
-        name: topic,
-        ports: [
-          {
-            id: "port-bottom-source",
-            position: [0.5, 1],
-            name: "source port",
-            isInputDisabled: false,
-            isOutputDisabled: false,
-            data: {
-              nodeType: "source",
-            },
-          },
-        ],
-        data: {
-          nodeType: "source",
-        },
-        x: window.innerWidth / 2 - 50,
-        y: 100,
-      },
-    ],
-    edges: [],
-  };
+const GraphView = ({ data }: GraphViewProps) => {
   const [state, dispatch] = useGraphReducer(
     {
       settings: {
@@ -88,7 +63,7 @@ const GraphView = ({ topic }: GraphViewProps) => {
           GraphFeatures.LimitBoundary,
         ]),
       },
-      data: GraphModel.fromJSON(baseNode),
+      data: GraphModel.fromJSON(data),
     },
     undefined
   );
