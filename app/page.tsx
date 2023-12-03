@@ -11,7 +11,7 @@ export default function Home() {
   if (inputRef.current) {
     inputRef.current.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
-        router.push(`/graph?t=${topic}`);
+        router.push(`/graph/${topic.replace(/\s/g, "_")}`);
       }
     });
   }
@@ -30,13 +30,12 @@ export default function Home() {
           ref={inputRef}
           autoFocus
           onInput={(e) => setTopic(e.currentTarget.value)}
-          onSubmit={() => router.push(`/graph?t=${topic}`)}
           className="flex-1 focus:outline-none"
         />
 
         <button
           className="flex justify-center items-center"
-          onClick={() => router.push(`/graph?t=${topic}`)}
+          onClick={() => router.push(`/graph/${topic.replace(/\s/g, "_")}`)}
         >
           <Image src="/send.svg" width={44} height={44} alt="send" />
         </button>

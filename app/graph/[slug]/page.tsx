@@ -7,28 +7,26 @@ import axios from "axios";
 import { createBaseGraph } from "@/lib/utils/createBaseGraph";
 const GraphView = dynamic(() => import("@/lib/graph/graph"), { ssr: false });
 
-export default function Page() {
-  const params = useSearchParams();
-  const topic = params.get("t");
+export default function Page({ params }: { params: { slug: string } }) {
+  const topic = params.slug.replace(/_/g, " ");
   const [graphData, setGraphData] = useState<ICanvasData | undefined>(
     undefined
   );
 
   useEffect(() => {
     async function getBaseSubtopics() {
-      console.log("topic", topic);
       if (!topic) return;
       interface ISubtopics {
         [key: string]: string;
       }
-      const res = await axios.post<ISubtopics>("/graph/api", { topic });
+      const res = await axios.post<ISubtopics>(`/graph/${topic}/api`);
       const subtopics = Object.values(res.data);
       console.log("subtopics", subtopics);
       const data = createBaseGraph(topic, subtopics);
       setGraphData(data);
     }
     getBaseSubtopics();
-  }, []);
+  }, [topic]);
 
   return (
     <Suspense fallback={<Loading />}>
