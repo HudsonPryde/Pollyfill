@@ -19,9 +19,7 @@ export const createBaseGraph = (topic: string, subtopics: string[]): ICanvasData
                 name: "source port",
                 isInputDisabled: false,
                 isOutputDisabled: false,
-                data: {
-                  nodeType: "source",
-                },
+                data: undefined,
               },
             ],
             data: {

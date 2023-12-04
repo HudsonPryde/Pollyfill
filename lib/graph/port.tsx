@@ -13,8 +13,8 @@ import {
   GraphCanvasEvent,
   updateData,
 } from "react-dag-editor";
-import { subtopics } from "../data/sampleResponse";
 import { addGraphData } from "../utils/addGraphData";
+import axios from "axios";
 
 export class PortConfig implements IPortConfig {
   public getStyle(
@@ -150,8 +150,25 @@ const RADIUS = 18;
 export const Port: React.FunctionComponent<IPortProps> = (props) => {
   const { port, x, y, parentNode, style, isConnectable } = props;
   const state = useGraphState();
-  useMemo(() => {
+  useMemo(async () => {
     if (Bitset.has(GraphPortStatus.Selected)(port.status)) {
+      // construct the prompt
+      if (!parentNode?.ports) return;
+      const edges = state.state.data.present.getEdgesByTarget(
+        parentNode.id,
+        parentNode.ports[0].id
+      );
+      if (!edges) return;
+      const edgeId = edges.values().next().value;
+      const edge = state.state.data.present.edges.get(edgeId);
+      if (!edge) return;
+      console.log("edge", edge);
+      const sourceNode = state.state.data.present.nodes.get(edge.source);
+      console.log("sourceNode", sourceNode?.name);
+      let prompt = `${parentNode.name} with relation to ${sourceNode?.name}`;
+      prompt = prompt.replace(/_/g, " ");
+      const res = await axios.post(`/graph/${prompt}/api`);
+      const subtopics: string[] = Object.values(res.data);
       state.dispatch({
         type: GraphCanvasEvent.UpdateData,
         shouldRecord: false,

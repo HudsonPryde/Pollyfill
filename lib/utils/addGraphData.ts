@@ -2,10 +2,20 @@
 import { ICanvasEdge, ICanvasNode, GraphModel } from "react-dag-editor";
 import { v4 as uuidv4 } from "uuid";
 
+// add adata to the graph by extending the given node
 export const addGraphData = (graph: GraphModel, baseNode: ICanvasNode, subtopics: string[]): GraphModel => {
+    if (!baseNode) return graph;
     let newData: GraphModel = graph;
     const baseWidth = baseNode.width ?? 110;
     const xOffset = baseNode.x + baseWidth/2 - (110*subtopics.length)/2;
+    // set base node port data to undefined to remove the button
+    const basePorts = baseNode.ports ?? [];
+    newData = newData.updatePort(baseNode.id, basePorts[1].id ?? "", () => {
+        return {
+            ...basePorts[1],
+            data: undefined,
+        }
+    });
     subtopics.forEach((topic, index) => {
         const nodeId = uuidv4();
         const node: ICanvasNode = {

@@ -19,7 +19,17 @@ export default function Page({ params }: { params: { slug: string } }) {
       interface ISubtopics {
         [key: string]: string;
       }
-      const res = await axios.post<ISubtopics>(`/graph/${topic}/api`);
+      // const res = await axios.post<ISubtopics>(`/graph/${topic}/api`);
+      const res = {
+        data: {
+          "1": "Yarn",
+          "2": "Crochet Hooks",
+          "3": "Basic Stitches",
+          "4": "Crochet Patterns",
+          "5": "Crochet Terminology",
+          "6": "Crochet Techniques",
+        },
+      };
       const subtopics = Object.values(res.data);
       console.log("subtopics", subtopics);
       const data = createBaseGraph(topic, subtopics);
