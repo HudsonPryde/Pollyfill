@@ -2,18 +2,39 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import {
+  createTopic,
+  setTopicHistory,
+  setTopicGraphData,
+} from "@/lib/data/storage";
+import { createBaseGraph } from "@/lib/utils/createBaseGraph";
+import axios from "axios";
+interface ISubtopics {
+  [key: string]: string;
+}
 
 export default function Home() {
   const router = useRouter();
   const [topic, setTopic] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  if (inputRef.current) {
-    inputRef.current.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        router.push(`/graph/${topic.replace(/\s/g, "_")}`);
-      }
+  async function handleNavigate() {
+    if (!topic) {
+      return;
+    }
+    const id = createTopic(topic);
+    let data = new FormData();
+    data.append("topic", topic);
+    data.append("chat_history", "[]");
+    const res = await axios.post<ISubtopics>(`/graph/api`, data);
+    const subtopics = Object.values(res.data);
+    const history = JSON.stringify({
+      inputs: { topic: topic },
+      outputs: { subtopics: res.data },
     });
+    setTopicHistory(id, history);
+    const graph = createBaseGraph(topic, subtopics);
+    setTopicGraphData(id, JSON.stringify(graph));
+    router.push(`/graph/${id}`);
   }
 
   return (
@@ -27,7 +48,6 @@ export default function Home() {
       {/* user input */}
       <div className="rounded-lg shadow-md w-full max-w-4xl h-12 focus:outline-none p-2 flex flex-row bg-white">
         <input
-          ref={inputRef}
           autoFocus
           onInput={(e) => setTopic(e.currentTarget.value)}
           className="flex-1 focus:outline-none"
@@ -35,7 +55,7 @@ export default function Home() {
 
         <button
           className="flex justify-center items-center"
-          onClick={() => router.push(`/graph/${topic.replace(/\s/g, "_")}`)}
+          onClick={handleNavigate}
         >
           <Image src="/send.svg" width={44} height={44} alt="send" />
         </button>

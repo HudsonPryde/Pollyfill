@@ -1,16 +1,16 @@
 import type { NextApiRequest } from 'next'
-import cleanRes from '@/lib/utils/cleanRes';
  
-export async function POST(req: Request, { params }: { params: { slug: string } }) {
+export async function POST(req: Request) {
   try {
+    const form = await req.formData()
     var myHeaders = new Headers();
     myHeaders.append("azureml-model-deployment", "pollyfill-choaq-3");
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Bearer ${process.env.NEXT_PUBLIC_API_KEY}`);
 
     var raw = JSON.stringify({
-      "topic": params.slug,
-      "chat_history": []
+      "topic": form.get('topic'),
+      "chat_history": JSON.parse(form.get('chat_history') as string),
     });
 
     var requestOptions = {
@@ -18,11 +18,10 @@ export async function POST(req: Request, { params }: { params: { slug: string } 
       headers: myHeaders,
       body: raw,
     };
-    const res = await (await fetch("https://pollyfill-choaq.eastus2.inference.ml.azure.com/score", requestOptions)).json()
-    console.log(res)
-    let data = res.subtopics
-    data = data.replace(/'/g, '"')
-    return Response.json(JSON.parse(data))
+    console.log(raw)
+    let data = await (await fetch("https://pollyfill-choaq.eastus2.inference.ml.azure.com/score", requestOptions)).json()
+    console.log(data)
+    return Response.json(JSON.parse(data.subtopics))
   } catch(err) {
     console.log(err)
     return Response.json(err)

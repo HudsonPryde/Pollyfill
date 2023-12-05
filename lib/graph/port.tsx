@@ -15,6 +15,8 @@ import {
 } from "react-dag-editor";
 import { addGraphData } from "../utils/addGraphData";
 import axios from "axios";
+import { usePathname } from "next/navigation";
+import { getTopicHistory } from "@/lib/data/storage";
 
 export class PortConfig implements IPortConfig {
   public getStyle(
@@ -150,24 +152,15 @@ const RADIUS = 18;
 export const Port: React.FunctionComponent<IPortProps> = (props) => {
   const { port, x, y, parentNode, style, isConnectable } = props;
   const state = useGraphState();
+  const path = usePathname();
   useMemo(async () => {
     if (Bitset.has(GraphPortStatus.Selected)(port.status)) {
-      // construct the prompt
-      if (!parentNode?.ports) return;
-      const edges = state.state.data.present.getEdgesByTarget(
-        parentNode.id,
-        parentNode.ports[0].id
-      );
-      if (!edges) return;
-      const edgeId = edges.values().next().value;
-      const edge = state.state.data.present.edges.get(edgeId);
-      if (!edge) return;
-      console.log("edge", edge);
-      const sourceNode = state.state.data.present.nodes.get(edge.source);
-      console.log("sourceNode", sourceNode?.name);
-      let prompt = `${parentNode.name} with relation to ${sourceNode?.name}`;
-      prompt = prompt.replace(/_/g, " ");
-      const res = await axios.post(`/graph/${prompt}/api`);
+      // topic id
+      const id = path.split("/")[2] ?? "";
+      let form = new FormData();
+      form.append("topic", parentNode.name ?? "");
+      form.append("chat_history", JSON.stringify(getTopicHistory(id)));
+      const res = await axios.post(`/graph/api`, form);
       const subtopics: string[] = Object.values(res.data);
       state.dispatch({
         type: GraphCanvasEvent.UpdateData,
