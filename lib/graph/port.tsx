@@ -153,6 +153,7 @@ export const Port: React.FunctionComponent<IPortProps> = (props) => {
   const { port, x, y, parentNode, style, isConnectable } = props;
   const state = useGraphState();
   const path = usePathname();
+
   useMemo(async () => {
     if (Bitset.has(GraphPortStatus.Selected)(port.status)) {
       // topic id

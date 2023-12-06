@@ -10,12 +10,16 @@ import {
   CanvasMouseMode,
   GraphCanvasEvent,
   ICanvasData,
+  GraphNodeEvent,
+  Bitset,
+  GraphNodeStatus,
 } from "react-dag-editor"; // Graph component & utils
 import { graphSample } from "../data/graphSample";
 import { EdgeConfig } from "./edge";
 import { PortConfig } from "./port";
 import { NodeConfig } from "./node";
 import { addGraphData } from "../utils/addGraphData";
+import TopicInfo from "@/components/topicInfo";
 
 export const graphConfig = GraphConfigBuilder.default()
   .registerNode((node) => {
@@ -95,18 +99,26 @@ const GraphView = ({ data }: GraphViewProps) => {
   }, [dispatch]);
 
   return (
-    <ReactDagEditor
+    <div
       style={{
         flex: 1,
         display: "flex",
-        flexDirection: "column",
-        height: "100vh",
+        flexDirection: "row",
       }}
-      state={state}
-      dispatch={dispatch}
     >
-      <Graph canvasMouseMode={CanvasMouseMode.Select} />
-    </ReactDagEditor>
+      <ReactDagEditor
+        style={{
+          flex: 1,
+          display: "flex",
+          height: "100vh",
+        }}
+        state={state}
+        dispatch={dispatch}
+      >
+        <Graph canvasMouseMode={CanvasMouseMode.Select} />
+      </ReactDagEditor>
+      <TopicInfo state={state} dispatch={dispatch} />
+    </div>
   );
 };
 

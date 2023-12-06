@@ -4,6 +4,7 @@ export async function POST(req: Request) {
   try {
     const form = await req.formData()
     var myHeaders = new Headers();
+    const deployment = form.get('deployment')
     myHeaders.append("azureml-model-deployment", "pollyfill-choaq-3");
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Bearer ${process.env.NEXT_PUBLIC_API_KEY}`);
@@ -18,9 +19,9 @@ export async function POST(req: Request) {
       headers: myHeaders,
       body: raw,
     };
-    console.log(raw)
+
     let data = await (await fetch("https://pollyfill-choaq.eastus2.inference.ml.azure.com/score", requestOptions)).json()
-    console.log(data)
+
     return Response.json(JSON.parse(data.subtopics))
   } catch(err) {
     console.log(err)

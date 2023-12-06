@@ -1,9 +1,16 @@
 'use client'
 import { v4 as uuidv4 } from 'uuid';
-
+/*
+each graph is stored in local storage by uuid as a json string
+each entry has the following fields:
+topic: string
+graphData: IGraphData
+history: string[]
+topicInfo: { [key: node id]: { "info": string, "links": string[] } }
+*/
 export function createTopic(topic: string) {
     const id = uuidv4();
-    localStorage.setItem(id, `{"topic": "${topic}", "graphData": {}, "history": []}`);
+    localStorage.setItem(id, `{"topic": "${topic}", "graphData": {}, "history": [], "topicInfo": {} }`);
     return id;
 }
 
@@ -34,8 +41,18 @@ export function listTopics() {
         const key = localStorage.key(i);
         if (key) {
             const data = JSON.parse(localStorage.getItem(key) || "{}");
-            topics.push({id: key, label: data.topic});
+            if(data.topic) topics.push({id: key, label: data.topic});
         }
     }
     return topics;
+}
+
+export function setTopicInfo( id: string, nodeId: string, info: string, links: string[]) {
+    let newData = JSON.parse(localStorage.getItem(id) ?? "{}");
+    newData.topicInfo[nodeId] = {info, links};
+    localStorage.setItem(id, JSON.stringify(newData));
+}
+
+export function getTopicInfo(id: string, nodeId: string) {
+    return JSON.parse(localStorage.getItem(id) ?? "{}").topicInfo[nodeId];
 }

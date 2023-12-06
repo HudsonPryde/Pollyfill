@@ -7,9 +7,21 @@ import axios from "axios";
 import { getTopic } from "@/lib/data/storage";
 const GraphView = dynamic(() => import("@/lib/graph/graph"), { ssr: false });
 
+interface TopicData {
+  topic: string;
+  graphData: string;
+  history: string;
+}
+
 export default function Page({ params }: { params: { slug: string } }) {
   const id = params.slug;
-  const topic = getTopic(id);
+  const [topic, setTopic] = useState<TopicData>();
+  useEffect(() => {
+    const topic = getTopic(id);
+    if (topic) {
+      setTopic(topic);
+    }
+  }, [id]);
 
   return (
     <Suspense fallback={<Loading />}>
